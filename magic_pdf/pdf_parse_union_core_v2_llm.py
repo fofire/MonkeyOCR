@@ -303,22 +303,7 @@ def cal_block_index(fix_blocks, sorted_bboxes):
     if sorted_bboxes is not None:
 
         for block in fix_blocks:
-            line_index_list = []
-            if len(block['lines']) == 0:
-                block['index'] = sorted_bboxes.index(block['bbox'])
-            else:
-                for line in block['lines']:
-                    line['index'] = sorted_bboxes.index(line['bbox'])
-                    line_index_list.append(line['index'])
-                median_value = statistics.median(line_index_list)
-                block['index'] = median_value
-
-
-            if block['type'] in [BlockType.ImageBody, BlockType.TableBody, BlockType.Title, BlockType.InterlineEquation]:
-                if 'real_lines' in block:
-                    block['virtual_lines'] = copy.deepcopy(block['lines'])
-                    block['lines'] = copy.deepcopy(block['real_lines'])
-                    del block['real_lines']
+            block['index'] = sorted_bboxes.index(block['bbox'])
     else:
 
         block_bboxes = []
@@ -412,23 +397,7 @@ def sort_lines_by_model(fix_blocks, page_w, page_h, line_height, MonkeyOCR_model
         page_line_list.extend(line_bboxes)
 
     for block in fix_blocks:
-        if block['type'] in [
-            BlockType.Text, BlockType.Title,
-            BlockType.ImageCaption, BlockType.ImageFootnote,
-            BlockType.TableCaption, BlockType.TableFootnote
-        ]:
-            if len(block['lines']) == 0:
-                add_lines_to_block(block)
-            elif block['type'] in [BlockType.Title] and len(block['lines']) == 1 and (block['bbox'][3] - block['bbox'][1]) > line_height * 2:
-                block['real_lines'] = copy.deepcopy(block['lines'])
-                add_lines_to_block(block)
-            else:
-                for line in block['lines']:
-                    bbox = line['bbox']
-                    page_line_list.append(bbox)
-        elif block['type'] in [BlockType.ImageBody, BlockType.TableBody, BlockType.InterlineEquation]:
-            block['real_lines'] = copy.deepcopy(block['lines'])
-            add_lines_to_block(block)
+        page_line_list.append(block['bbox'])
 
     if len(page_line_list) > 200:
         return None
