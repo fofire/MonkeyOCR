@@ -1,12 +1,11 @@
-#!/usr/bin/env python3
-# Copyright (c) Opendatalab. All rights reserved.
 import os
 import time
 import argparse
 import sys
+import traceback
 import torch.distributed as dist
-from magic_pdf.utils.load_image import pdf_to_images
 
+from magic_pdf.utils.load_image import pdf_to_images
 from magic_pdf.data.data_reader_writer import FileBasedDataWriter, FileBasedDataReader
 from magic_pdf.data.dataset import PymuDocDataset, ImageDataset, MultiFileDataset
 from magic_pdf.model.doc_analyze_by_custom_model_llm import doc_analyze_llm
@@ -743,7 +742,8 @@ Usage examples:
             raise FileNotFoundError(f"Input path does not exist: {args.input_path}")
             
     except Exception as e:
-        print(f"\n❌ Processing failed: {str(e)}", file=sys.stderr)
+        print("\n❌ Processing failed with traceback:", file=sys.stderr)
+        traceback.print_exc(file=sys.stderr)
         sys.exit(1)
     finally:
         # Clean up resources
