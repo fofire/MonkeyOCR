@@ -30,15 +30,6 @@ else
     log_warn "NVIDIA GPU not detected"
 fi
 
-# Download models
-log_info "Checking and downloading models..."
-if /app/MonkeyOCR/download_models.sh; then
-    log_info "Models ready"
-else
-    log_error "Model download failed, but container will continue running"
-    log_error "You can manually download models after entering the container"
-fi
-
 # Decide startup method based on passed arguments
 if [ $# -eq 0 ]; then
     log_info "Starting interactive Python environment"
