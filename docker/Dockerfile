@@ -24,7 +24,7 @@ RUN pip install --no-cache-dir \
     paddlepaddle-gpu==3.0.0 -i https://www.paddlepaddle.org.cn/packages/stable/cu${CUDA_VERSION}/
 
 RUN pip install --no-cache-dir \
-    lmdeploy==0.9.2 huggingface_hub paddlex[base]
+    lmdeploy==0.9.2 huggingface_hub paddlex[base] vllm==0.9.1
 
 COPY . /tmp/MonkeyOCR
 WORKDIR /tmp/MonkeyOCR
@@ -44,7 +44,7 @@ RUN chmod +x docker/download_models.sh && \
 RUN pip install --no-cache-dir -e .
 
 # Apply LMDeploy patcher if needed
-ARG LMDEPLOY_PATCHED=false
+ARG LMDEPLOY_PATCHED=true
 RUN if [ "$LMDEPLOY_PATCHED" = "true" ]; then \
       python tools/lmdeploy_patcher.py patch && \
       echo "Successfully applied lmdeploy patch"; \
@@ -57,7 +57,7 @@ FROM nvidia/cuda:12.4.1-runtime-ubuntu22.04
 
 # Install only runtime dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    python3.10-dev python3-pip ccache build-essential \
+    python3.10-dev python3-pip ccache build-essential nano \
     libgl1-mesa-glx libglib2.0-0 \
     poppler-utils \
     && rm -rf /var/lib/apt/lists/* \
